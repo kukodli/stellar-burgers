@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getOrderByNumberApi, getOrdersApi } from '@api';
 import { TOrder } from '@utils-types';
 
@@ -35,6 +35,10 @@ const orderSlice = createSlice({
   reducers: {
     clearCurrentOrder: (state) => {
       state.currentOrder = null;
+    },
+    updateUserOrders: (state, action: PayloadAction<TOrder[]>) => {
+      state.orders = action.payload;
+      state.isLoading = false;
     }
   },
   extraReducers: (builder) => {
@@ -76,6 +80,6 @@ export const selectCurrentOrder = (state: TRootState) =>
 export const selectIsLoading = (state: TRootState) => state.order.isLoading;
 export const selectOrderError = (state: TRootState) => state.order.error;
 
-export const { clearCurrentOrder } = orderSlice.actions;
+export const { clearCurrentOrder, updateUserOrders } = orderSlice.actions;
 
 export default orderSlice.reducer;

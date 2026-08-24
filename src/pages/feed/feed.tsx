@@ -5,8 +5,10 @@ import { useDispatch, useSelector } from '../../services/store';
 import {
   getFeeds,
   selectFeedLoading,
-  selectOrders
+  selectOrders,
+  updateFeed
 } from '../../services/slices/feedSlice';
+import { getAllOrdersSocketUrl } from '../../utils/burger-socket';
 
 export const Feed: FC = () => {
   const orders = useSelector(selectOrders);
@@ -15,6 +17,24 @@ export const Feed: FC = () => {
 
   useEffect(() => {
     dispatch(getFeeds());
+
+    const socket = new WebSocket(getAllOrdersSocketUrl());
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data?.success) {
+        dispatch(
+          updateFeed({
+            orders: data.orders,
+            total: data.total,
+            totalToday: data.totalToday
+          })
+        );
+      }
+    };
+
+    return () => {
+      socket.close();
+    };
   }, [dispatch]);
 
   if (isLoading && !orders.length) {
