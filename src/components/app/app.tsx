@@ -17,7 +17,7 @@ import { useEffect } from 'react';
 import { ProtectedRoute } from '../protected-route/protected-route';
 import { useDispatch } from '../../services/store';
 import { checkUserAuth } from '../../services/slices/userSlice';
-import { getIngredients } from '../../services/slices/IngredientSlice';
+import { getIngredients } from '../../services/slices/ingredientsSlice';
 
 const App = () => {
   const dispatch = useDispatch();

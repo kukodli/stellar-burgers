@@ -9,7 +9,7 @@ import {
   getOrderByNumber,
   selectCurrentOrder
 } from '../../services/slices/orderSlice';
-import { selectIngredients } from '../../services/slices/IngredientSlice';
+import { selectIngredients } from '../../services/slices/ingredientsSlice';
 
 export const OrderInfo: FC = () => {
   const dispatch = useDispatch();

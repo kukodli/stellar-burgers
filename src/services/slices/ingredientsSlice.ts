@@ -1,4 +1,8 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice
+} from '@reduxjs/toolkit';
 import { getIngredientsApi } from '@api';
 import { TIngredient } from '@utils-types';
 
@@ -48,5 +52,14 @@ export const selectIngredientsLoading = (state: TRootState) =>
   state.ingredients.isLoading;
 export const selectIngredientsError = (state: TRootState) =>
   state.ingredients.error;
+export const selectBuns = createSelector([selectIngredients], (items) =>
+  items.filter((item) => item.type === 'bun')
+);
+export const selectMains = createSelector([selectIngredients], (items) =>
+  items.filter((item) => item.type === 'main')
+);
+export const selectSauces = createSelector([selectIngredients], (items) =>
+  items.filter((item) => item.type === 'sauce')
+);
 
 export default ingredientsSlice.reducer;

@@ -8,11 +8,10 @@ import {
   closeOrderModal,
   createOrder,
   selectConstructorItems,
+  selectOrderError,
   selectOrderModalData,
   selectOrderRequest
 } from '../../services/slices/constructorSlice';
-import { getFeeds } from '../../services/slices/feedSlice';
-import { getUserOrders } from '../../services/slices/orderSlice';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
@@ -21,6 +20,7 @@ export const BurgerConstructor: FC = () => {
   const constructorItems = useSelector(selectConstructorItems);
   const orderRequest = useSelector(selectOrderRequest);
   const orderModalData = useSelector(selectOrderModalData);
+  const orderError = useSelector(selectOrderError);
   const user = useSelector(selectUser);
 
   const onOrderClick = () => {
@@ -29,13 +29,7 @@ export const BurgerConstructor: FC = () => {
       navigate('/login', { state: { from: location } });
       return;
     }
-    dispatch(createOrder())
-      .unwrap()
-      .then(() => {
-        dispatch(getFeeds());
-        dispatch(getUserOrders());
-      })
-      .catch(() => undefined);
+    dispatch(createOrder());
   };
 
   const handleCloseOrderModal = () => {
@@ -58,6 +52,7 @@ export const BurgerConstructor: FC = () => {
       orderRequest={orderRequest}
       constructorItems={constructorItems}
       orderModalData={orderModalData}
+      orderError={orderError}
       onOrderClick={onOrderClick}
       closeOrderModal={handleCloseOrderModal}
     />
