@@ -95,7 +95,11 @@ describe('burgerConstructor reducer', () => {
   });
 
   test('заменяет булку при повторном добавлении', () => {
-    const anotherBun = { ...bunInConstructor, id: 'uuid-bun-2', name: 'Флюоресцентная булка' };
+    const anotherBun = {
+      ...bunInConstructor,
+      id: 'uuid-bun-2',
+      name: 'Флюоресцентная булка'
+    };
     const state = constructorReducer(
       { ...initialState, bun: bunInConstructor },
       {

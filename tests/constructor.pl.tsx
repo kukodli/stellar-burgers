@@ -9,18 +9,6 @@ const orderNumber = '12345';
 
 test.describe('Конструктор бургера', () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-      const removeOverlay = () => {
-        document.getElementById('webpack-dev-server-client-overlay')?.remove();
-      };
-      const observer = new MutationObserver(removeOverlay);
-      observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-      });
-      removeOverlay();
-    });
-
     await page.routeFromHAR(path.join(harsDir, 'ingredients.har'), {
       url: '**/api/ingredients',
       update: false
@@ -48,14 +36,14 @@ test.describe('Конструктор бургера', () => {
     await page
       .getByTestId('ingredient-bun-1')
       .getByRole('button', { name: 'Добавить' })
-      .click({ force: true });
+      .click();
     await expect(constructor.getByText(`${bunName} (верх)`)).toBeVisible();
     await expect(constructor.getByText(`${bunName} (низ)`)).toBeVisible();
 
     await page
       .getByTestId('ingredient-main-1')
       .getByRole('button', { name: 'Добавить' })
-      .click({ force: true });
+      .click();
     await expect(constructor.getByText(mainName)).toBeVisible();
     await expect(constructor.getByText('Выберите начинку')).toHaveCount(0);
   });
@@ -65,10 +53,9 @@ test.describe('Конструктор бургера', () => {
       page
     }) => {
       await page.goto('/');
-      await page
-        .getByTestId('ingredient-bun-1')
-        .getByRole('link')
-        .click({ force: true });
+      await expect(page.getByTestId('modal')).toHaveCount(0);
+
+      await page.getByTestId('ingredient-bun-1').getByRole('link').click();
 
       const modal = page.getByTestId('modal');
       await expect(modal).toBeVisible();
@@ -82,10 +69,9 @@ test.describe('Конструктор бургера', () => {
       page
     }) => {
       await page.goto('/');
-      await page
-        .getByTestId('ingredient-main-1')
-        .getByRole('link')
-        .click({ force: true });
+      await expect(page.getByTestId('modal')).toHaveCount(0);
+
+      await page.getByTestId('ingredient-main-1').getByRole('link').click();
 
       const modal = page.getByTestId('modal');
       await expect(modal).toBeVisible();
@@ -96,27 +82,26 @@ test.describe('Конструктор бургера', () => {
 
     test('закрывается по клику на крестик', async ({ page }) => {
       await page.goto('/');
-      await page
-        .getByTestId('ingredient-bun-1')
-        .getByRole('link')
-        .click({ force: true });
+      await expect(page.getByTestId('modal')).toHaveCount(0);
+
+      await page.getByTestId('ingredient-bun-1').getByRole('link').click();
       await expect(page.getByTestId('modal')).toBeVisible();
 
-      await page.getByTestId('modal-close').click({ force: true });
+      await page.getByTestId('modal-close').click();
       await expect(page.getByTestId('modal')).toHaveCount(0);
+      await expect(page).toHaveURL('/');
     });
 
     test('закрывается по клику на оверлей', async ({ page }) => {
       await page.goto('/');
-      await page
-        .getByTestId('ingredient-bun-1')
-        .getByRole('link')
-        .click({ force: true });
+      await expect(page.getByTestId('modal')).toHaveCount(0);
+
+      await page.getByTestId('ingredient-bun-1').getByRole('link').click();
       await expect(page.getByTestId('modal')).toBeVisible();
 
       await page
         .getByTestId('modal-overlay')
-        .click({ position: { x: 2, y: 2 }, force: true });
+        .click({ position: { x: 2, y: 2 } });
       await expect(page.getByTestId('modal')).toHaveCount(0);
     });
   });
@@ -138,29 +123,38 @@ test.describe('Конструктор бургера', () => {
       });
 
       await page.goto('/');
+
+      const constructor = page.getByTestId('burger-constructor');
+      await expect(constructor.getByText('Выберите булки').first()).toBeVisible();
+      await expect(constructor.getByText('Выберите начинку')).toBeVisible();
+
       await page
         .getByTestId('ingredient-bun-1')
         .getByRole('button', { name: 'Добавить' })
-        .click({ force: true });
+        .click();
+      await expect(constructor.getByText(`${bunName} (верх)`)).toBeVisible();
+      await expect(constructor.getByText(`${bunName} (низ)`)).toBeVisible();
+
       await page
         .getByTestId('ingredient-main-1')
         .getByRole('button', { name: 'Добавить' })
-        .click({ force: true });
-      await page
-        .getByRole('button', { name: 'Оформить заказ' })
-        .click({ force: true });
+        .click();
+      await expect(constructor.getByText(mainName)).toBeVisible();
+      await expect(constructor.getByText('Выберите начинку')).toHaveCount(0);
 
-      await expect(page.getByTestId('modal')).toBeVisible();
-      await expect(page.getByTestId('order-number')).toHaveText(orderNumber);
+      await expect(page.getByTestId('modal')).toHaveCount(0);
+      await page.getByRole('button', { name: 'Оформить заказ' }).click();
 
-      const constructor = page.getByTestId('burger-constructor');
-      await expect(
-        constructor.getByText('Выберите булки').first()
-      ).toBeVisible();
+      const modal = page.getByTestId('modal');
+      await expect(modal).toBeVisible();
+      await expect(modal.getByTestId('order-number')).toHaveText(orderNumber);
+
+      await expect(constructor.getByText('Выберите булки').first()).toBeVisible();
       await expect(constructor.getByText('Выберите начинку')).toBeVisible();
 
-      await page.getByTestId('modal-close').click({ force: true });
+      await page.getByTestId('modal-close').click();
       await expect(page.getByTestId('modal')).toHaveCount(0);
+      await expect(page).toHaveURL('/');
     });
   });
 });

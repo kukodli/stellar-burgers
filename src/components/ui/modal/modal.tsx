@@ -19,7 +19,6 @@ export const ModalUI: FC<TModalUIProps> = memo(
             type='button'
             data-testid='modal-close'
             aria-label='Закрыть'
-            onClick={onClose}
           >
             <CloseIcon type='primary' onClick={onClose} />
           </button>
